@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,11 +18,8 @@ import java.util.stream.Collectors;
  * Created by anrosca on Dec, 2017
  */
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
-    private static final Logger LOGGER = Logger.getLogger(EmployeeServiceImpl.class);
-
-    @Autowired
-    private EmployeeService proxy;
+public class ClassBasedEmployeeService implements Serializable, Cloneable {
+    private static final Logger LOGGER = Logger.getLogger(ClassBasedEmployeeService.class);
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -30,14 +28,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 // @Transactional(propagation = Propagation.REQUIRES_NEW)
     //for 1.1
     @Transactional(propagation = Propagation.REQUIRED)
-    @Override
     public Employee create(Employee employee) {
         LOGGER.info("Creating a new employee");
         return employeeRepository.create(employee);
     }
 
     @Transactional
-    @Override
     public Collection<Employee> batchCreate(Collection<Employee> employees) {
         LOGGER.info("Batch creating users.");
         return employees.stream()
@@ -46,34 +42,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Transactional
-    @Override
     public List<Employee> findAll() {
         return employeeRepository.findAll();
     }
 
     @Transactional
-    @Override
     public Optional<Employee> findById(String id) {
         return employeeRepository.findById(id);
     }
 
     @Transactional
-    @Override
     public Optional<Employee> findByDomainName(String domainName) {
         return employeeRepository.findByDomainName(domainName);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    @Override
     public void delete(String id) {
         employeeRepository.delete(id);
     }
 
-    @Override
     public Collection<Employee> createEmployeesFromExcelFile(InputStream inputStream) {
         Collection<Employee> employees = readExcelFile(inputStream);
 //        return batchCreate(employees); pitfall
-        return proxy.batchCreate(employees);
+        return batchCreate(employees);
     }
 
     private Collection<Employee> readExcelFile(InputStream inputStream) {
