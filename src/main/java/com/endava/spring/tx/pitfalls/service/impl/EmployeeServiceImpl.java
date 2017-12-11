@@ -26,9 +26,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-// for 1
-// @Transactional(propagation = Propagation.REQUIRES_NEW)
-    //for 1.1
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public Employee create(Employee employee) {
@@ -69,11 +66,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.delete(id);
     }
 
+    //batch create won't execute in a transaction
+//    @Transactional
     @Override
     public Collection<Employee> createEmployeesFromExcelFile(InputStream inputStream) {
         Collection<Employee> employees = readExcelFile(inputStream);
-//        return batchCreate(employees); pitfall
-        return proxy.batchCreate(employees);
+        return this.batchCreate(employees);
     }
 
     private Collection<Employee> readExcelFile(InputStream inputStream) {

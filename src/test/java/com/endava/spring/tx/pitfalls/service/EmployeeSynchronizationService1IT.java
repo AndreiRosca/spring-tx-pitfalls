@@ -19,10 +19,10 @@ public class EmployeeSynchronizationService1IT extends AbstractIT {
     @Autowired
     private EmployeeSynchronizationService synchronizationService;
 
-//    @Before
-//    public void setUp() throws Exception {
-//        MockitoAnnotations.initMocks(this);
-//    }
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void test() {
